@@ -106,7 +106,7 @@ async function boot() {
     return li;
   }));
   try { renderJourney($('journey')); } catch (e) { console.warn('journey', e); }
-  $('about-team').textContent = `${CONFIG.team.name} · ${CONFIG.team.location} · Challenge: ${CONFIG.team.challenge}`;
+  $('about-team').textContent = `Team ${CONFIG.team.name} (${CONFIG.team.location}): ${CONFIG.team.members.join(', ')} · Challenge: ${CONFIG.team.challenge}`;
   $('about-sources').replaceChildren(
     ...manifest.variables.map((v) =>
       el('li', {}, `${v.label}: `, el('a', { href: v.source.url || '#', target: '_blank', rel: 'noopener' }, `${v.source.name}${v.source.dataset ? ' · ' + v.source.dataset : ''}`))),

@@ -6,11 +6,10 @@ export const CONFIG = {
   appName: 'TerraTrace',
   tagline: 'Every place on Earth has a climate story. Find it, prove it, cite it.',
 
-  // TODO(team): put your real team name + members here
   team: {
     name: 'The Hotspot',
-    members: ['Sidharth Gopakumar', 'Teammate 2', 'Teammate 3', 'Teammate 4', 'Teammate 5'],
-    location: 'Ras Al Khaimah, UAE',
+    members: ['Sidharth Gopakumar', 'Arkha Biswas', 'Syed Mujeebuddin', 'Mohammed Fahad', 'Mehdi Azzedine Ouldbeziou'],
+    location: 'Abu Dhabi, UAE',
     challenge: 'Be an Earth System Trend Detective',
   },
 
