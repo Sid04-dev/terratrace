@@ -1,0 +1,32 @@
+{
+ "check_precipitation_merra2.json": {
+  "cells": 2592,
+  "significant": 519,
+  "still_significant": 509,
+  "autocorrelated": 139
+ },
+ "check_temperature_gistemp.json": {
+  "cells": 2564,
+  "significant": 1319,
+  "still_significant": 1291,
+  "autocorrelated": 250
+ },
+ "grid_precipitation.json": {
+  "cells": 2592,
+  "significant": 346,
+  "still_significant": 336,
+  "autocorrelated": 97
+ },
+ "grid_soil_moisture.json": {
+  "cells": 662,
+  "significant": 232,
+  "still_significant": 214,
+  "autocorrelated": 196
+ },
+ "grid_temperature.json": {
+  "cells": 2592,
+  "significant": 964,
+  "still_significant": 909,
+  "autocorrelated": 335
+ }
+}

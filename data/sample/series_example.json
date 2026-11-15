@@ -1,0 +1,68 @@
+{
+  "location": {
+    "lat": 25.79,
+    "lon": 55.94,
+    "cell_lat": 27.5,
+    "cell_lon": 57.5,
+    "cell_size": 5
+  },
+  "variable": "temperature",
+  "label": "Air temperature (2 m)",
+  "unit": "°C",
+  "decimals": 2,
+  "aggregation": "annual mean",
+  "source": {
+    "name": "NASA POWER",
+    "dataset": "T2M (MERRA-2)",
+    "publisher": "NASA Langley Research Center",
+    "url": "https://power.larc.nasa.gov/",
+    "version": "",
+    "doi": "",
+    "year": 2026
+  },
+  "years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "values": [
+    27.81,
+    27.95,
+    null,
+    28.1,
+    28.02,
+    28.31,
+    28.44,
+    28.39
+  ],
+  "trend": {
+    "per_decade": 0.83,
+    "rel_per_decade": 2.96,
+    "pct_change": "...",
+    "p_value": 0.011,
+    "significant": true,
+    "direction": "rising",
+    "completeness": 0.875,
+    "n": 7,
+    "first_mean": 27.88,
+    "last_mean": 28.35,
+    "max": {
+      "year": 2023,
+      "value": 28.44
+    },
+    "min": {
+      "year": 2017,
+      "value": 27.81
+    },
+    "line": {
+      "slope": 0.08,
+      "intercept": -133.6
+    }
+  },
+  "is_demo": true
+}

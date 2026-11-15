@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TerraTrace — find, prove and cite climate change anywhere on Earth</title>
+  <meta name="description" content="A NASA Space Apps 2026 project: click anywhere on Earth to see how it is changing, with citation-ready NASA data for students." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='none' stroke='%2300e0b8' stroke-width='6'/><path d='M10 50h80M50 10c-16 18-16 62 0 80M50 10c16 18 16 62 0 80' fill='none' stroke='%2300e0b8' stroke-width='4'/><circle cx='68' cy='36' r='8' fill='%23ffb547'/></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- ============ LOADER ============ -->
+  <div id="loader">
+    <div class="ld-grid" aria-hidden="true"></div>
+    <div class="ld-inner">
+      <div class="ld-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="ld-title">TERRATRACE</div>
+      <div class="ld-row"><span id="loader-text">Initialising</span><span id="loader-pct">0%</span></div>
+      <div class="loader-track"><div id="loader-bar"></div></div>
+      <div class="ld-foot">NASA SPACE APPS 2026 · EARTH SYSTEM TREND DETECTIVE</div>
+    </div>
+  </div>
+
+  <!-- ============ GLOBE + ATMOSPHERE ============ -->
+  <div id="globe" aria-label="Interactive 3D globe. Click anywhere to see how that place is changing."></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div id="hover-country" aria-hidden="true"></div>
+  <div id="probe" aria-hidden="true"></div>
+
+  <!-- ============ TOP HUD ============ -->
+  <header id="topbar">
+    <a class="brand" href="#" aria-label="TerraTrace home">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40"/><path d="M10 50h80M50 10c-16 18-16 62 0 80M50 10c16 18 16 62 0 80"/><circle class="sun" cx="70" cy="34" r="7"/></svg>
+      <span class="brand-text"><b>TERRATRACE</b><small>Earth trend detective</small></span>
+    </a>
+
+    <button id="search-trigger" class="pill search-pill" aria-label="Search places and commands">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span class="sp-long">Search a place or command…</span><span class="sp-short">Search</span>
+      <kbd>Ctrl K</kbd>
+    </button>
+
+    <div class="hud-right">
+      <div class="hud-readout" aria-hidden="true">
+        <div><small>CURSOR</small><span id="hud-coords">—</span></div>
+        <div><small>UTC</small><span id="hud-clock">--:--:--</span></div>
+      </div>
+      <nav class="pill nav-pill" aria-label="Main">
+        <button id="btn-hot" class="nav-btn" title="Explore: fastest-changing places and anomaly radar (H)"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-6 1-9z"/></svg><span>Hotspots</span></button>
+        <button id="btn-chat" class="nav-btn" title="Investigate: ask a question about the data (A)"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg><span>Ask</span></button>
+        <button id="btn-tour" class="nav-btn accent" title="Guided fly-through (T)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>Story</span></button>
+        <button id="btn-data" class="nav-btn" title="Data check"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><span>Data</span></button>
+        <button id="btn-about" class="nav-btn" title="About"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span>About</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============ VARIABLE DOCK (left rail) ============ -->
+  <nav id="dock" aria-label="Choose a variable"></nav>
+
+  <!-- ============ HOTSPOTS DRAWER ============ -->
+  <aside id="hotspots" class="glass" aria-label="Fastest-changing places">
+    <div class="hs-head">
+      <div><span class="eyebrow">Explore · global ranking</span><b id="hs-title">Hotspots</b></div>
+      <button class="icon small" id="hs-close" aria-label="Close">×</button>
+    </div>
+    <p class="muted small" id="hs-intro">Biggest statistically significant changes on Earth. Click one to fly there.</p>
+    <div class="mini-seg" id="hs-mode"><button data-hs="country" class="on">Countries</button><button data-hs="cell">Regions</button><button data-hs="anomaly">Anomalies</button></div>
+    <div id="hs-radar" hidden></div>
+    <div class="hs-cols">
+      <div><h4 id="hs-up-t">▲ Biggest increase</h4><ol id="hs-up"></ol></div>
+      <div><h4 id="hs-down-t">▼ Biggest decrease</h4><ol id="hs-down"></ol></div>
+    </div>
+    <p id="hs-note" class="muted small" hidden></p>
+  </aside>
+
+  <!-- ============ CHAT: investigation assistant ============ -->
+  <aside id="chat" class="glass" aria-label="Ask TerraTrace">
+    <div class="hs-head">
+      <div><span class="eyebrow">Investigation assistant</span><b>Ask TerraTrace</b></div>
+      <button class="icon small" id="chat-close" aria-label="Close">×</button>
+    </div>
+    <div id="chat-log" aria-live="polite"></div>
+    <div id="chat-sugg"></div>
+    <form id="chat-form">
+      <input id="chat-input" type="text" placeholder="Ask about a place, a trend or a term…" autocomplete="off" aria-label="Your question" />
+      <button class="btn accent small" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+    </form>
+    <p class="chat-note">Answers come only from the loaded data and a built-in glossary. It never invents numbers.</p>
+  </aside>
+
+  <!-- ============ BOTTOM CONSOLE: mode + timeline + legend ============ -->
+  <div id="console">
+    <div class="seg" role="group" aria-label="Globe view">
+      <span class="seg-glider" aria-hidden="true"></span>
+      <button data-mode="trend" class="on" title="Colour = how fast each place is changing (M)">Trend</button>
+      <button data-mode="year" title="Colour = difference from the early years — press play (Space)">Timeline</button>
+    </div>
+    <div id="timeline">
+      <button id="play" aria-label="Play timeline"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+      <div class="tl-track">
+        <input id="year" type="range" min="2001" max="2024" step="1" aria-label="Year" />
+        <div id="tl-ticks" aria-hidden="true"></div>
+      </div>
+      <div id="year-label">2024</div>
+    </div>
+  </div>
+
+  <div id="legend" class="glass">
+    <div class="lg-top"><span id="legend-title">Change per decade</span></div>
+    <div id="legend-bar"></div>
+    <div class="legend-ends"><span id="legend-lo"></span><span>0</span><span id="legend-hi"></span></div>
+    <div class="legend-note"><i class="faded-swatch"></i>Faded = not statistically significant</div>
+    <label class="opacity-row"><span>Layer</span><input id="opacity" type="range" min="0" max="100" value="90" aria-label="Data layer opacity" /></label>
+  </div>
+
+  <div id="tour-caption" aria-live="polite"></div>
+  <nav id="presets" aria-label="Example investigations"><span class="pr-lead">Try</span></nav>
+  <section id="start-card" class="glass" hidden aria-label="How to start">
+    <div class="sc-head"><b>Your first investigation</b><button id="sc-skip" class="link-btn" type="button">Skip</button></div>
+    <ol class="sc-steps">
+      <li><span>1</span><div><b>Choose a place</b><em>Tap the globe, search, or pick a “Try” example.</em></div></li>
+      <li><span>2</span><div><b>Pick an Earth indicator</b><em>Temperature, rainfall or soil moisture.</em></div></li>
+      <li><span>3</span><div><b>Read the tested trend</b><em>Statistics, independent checks and a citable report.</em></div></li>
+    </ol>
+    <div class="sc-actions"><button id="sc-example" class="btn accent small" type="button">See a full worked investigation</button><button id="sc-try" class="btn small" type="button">Try central Chile</button></div>
+  </section>
+  <div id="tap-hint" aria-live="polite" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/></svg><span>Tap anywhere on Earth to see how it is changing</span></div>
+
+  <!-- ============ SIDE PANEL ============ -->
+  <aside id="panel" class="glass" aria-label="Place details">
+    <button id="panel-grip" type="button" aria-label="Expand or collapse the report"><i></i></button>
+    <div class="panel-head">
+      <div>
+        <span class="eyebrow">Investigation report</span>
+        <h2 id="place-name">—</h2>
+        <div id="place-sub"></div>
+      </div>
+      <button id="panel-close" class="icon" aria-label="Close panel">×</button>
+    </div>
+    <div class="mini-seg" id="scope" hidden></div>
+    <nav class="rp-jump" aria-label="Report sections"><button data-jump="investigate">Investigate</button><button data-jump="validate">Validate</button><button data-jump="clues">Connected clues</button><button data-jump="report">Report</button></nav>
+
+    <div class="section-label reveal"><b>01</b> Climate fingerprint</div>
+    <div id="fingerprint" class="reveal" aria-label="Climate fingerprint of this place"></div>
+    <div id="yearfocus" hidden aria-live="polite"></div>
+    <figure id="minimap" class="reveal" hidden><div class="mm-frame"></div><figcaption></figcaption></figure>
+
+    <div id="panel-body">
+      <div class="empty-only" id="empty-msg"></div>
+      <div class="full-only">
+        <div class="section-label reveal"><b>02</b> <span id="var-title"></span></div>
+        <div class="headline reveal">
+          <div><div id="stat-big">—</div><div id="stat-small"></div></div>
+          <span id="evidence" class="chip"></span>
+        </div>
+        <p class="term-row"><abbr class="term" data-term="sen" tabindex="0">Sen’s slope</abbr><abbr class="term" data-term="ci" tabindex="0">95% CI</abbr><abbr class="term" data-term="mk" tabindex="0">Mann–Kendall</abbr><abbr class="term" data-term="hr" tabindex="0">Hamed–Rao</abbr><abbr class="term" data-term="fdr" tabindex="0">FDR</abbr><abbr class="term" data-term="xval" tabindex="0">Cross-validation</abbr></p>
+        <div id="sci" class="reveal"></div>
+        <div id="crosscheck" class="reveal" hidden></div>
+        <div id="jumpcheck" class="reveal" hidden></div>
+        <details class="var-about reveal"><summary>What is this variable?</summary><p id="var-about"></p><p id="var-why" class="muted"></p></details>
+        <div class="chart-wrap reveal"><canvas id="chart"></canvas></div>
+        <p class="chart-key reveal"><span><i class="ck-line"></i>annual value</span><span><i class="ck-trend"></i>Sen’s-slope trend</span><span><i class="ck-band"></i>95% confidence band</span><span><i class="ck-dot"></i>unusual year</span></p>
+        <div class="stripes-block reveal">
+          <div class="stripes-head">
+            <span title="Each bar is one year, coloured by how it compares with this place's average. Inspired by Ed Hawkins' #ShowYourStripes.">Climate stripes · one bar per year</span>
+            <button id="btn-stripes" class="link-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>PNG</button>
+          </div>
+          <div id="stripes" role="img" aria-label="Climate stripes"></div>
+          <div class="stripes-years"><span id="stripes-y0"></span><span id="stripes-y1"></span></div>
+        </div>
+        <div id="anomalies" class="reveal"></div>
+        <div class="compare-row reveal">
+          <div id="pins"></div>
+          <button id="btn-pin" class="btn small">＋ Compare</button>
+        </div>
+
+        <div class="section-label reveal"><b>03</b> What it means</div>
+        <p id="summary" class="reveal"></p>
+        <div id="mini-stats" class="reveal"></div>
+
+        <div class="path-wrap reveal">
+          <div class="path-head"><b>Investigation path</b><span>Question → place → evidence → test → validate → explain → conclude</span></div>
+          <ol id="path"></ol>
+          <div id="path-conclusion"><div><b>7 · Cautious conclusion</b><p></p></div><button class="btn small">Copy</button></div>
+          <button id="btn-invest" class="btn accent path-go">Generate full investigation report <span aria-hidden="true">→</span></button>
+        </div>
+
+        <details open class="reveal">
+          <summary>Research questions for your assignment</summary>
+          <ol id="questions"></ol>
+        </details>
+
+        <details class="reveal">
+          <summary>Cite this data</summary>
+          <div class="cite-row">
+            <select id="cite-style" aria-label="Citation style">
+              <option value="apa">APA 7</option>
+              <option value="harvard">Harvard</option>
+              <option value="bibtex">BibTeX</option>
+            </select>
+            <button id="btn-cite" class="btn small">Copy citation</button>
+            <button id="btn-methods" class="btn small">Copy methods paragraph</button>
+          </div>
+          <pre id="cite-preview"></pre>
+        </details>
+
+        <div class="section-label reveal" id="sec-clues"><b>04</b> Connected clues</div>
+        <div id="relations" class="reveal"></div>
+
+        <div class="section-label reveal" id="sec-report"><b>05</b> Report &amp; export</div>
+        <div class="export-row reveal">
+          <button id="btn-sheet" class="btn accent">Fact sheet · PDF</button>
+          <button id="btn-invest2" class="btn">Full investigation report</button>
+          <button id="btn-csv" class="btn">CSV</button>
+          <button id="btn-png" class="btn">Chart</button>
+          <button id="btn-share" class="btn">Link</button>
+        </div>
+        <p id="cell-note" class="reveal"></p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ INTRO ============ -->
+  <section id="intro">
+    <div class="intro-inner">
+      <div class="eyebrow intro-eyebrow">NASA Space Apps Challenge 2026 — Be an Earth System Trend Detective</div>
+      <h1 class="intro-title" aria-label="Every place on Earth has a climate story.">
+        <span class="line"><span>Every place on Earth</span></span>
+        <span class="line"><span>has a <em>climate story.</em></span></span>
+      </h1>
+      <p class="lead">TerraTrace turns 24 years of NASA Earth observations into answers any student can use. <b>Find</b> a place. <b>Prove</b> how it's changing. <b>Cite</b> it in your report.</p>
+      <div class="intro-steps">
+        <div><b>01</b><span>Click anywhere on Earth</span></div>
+        <div><b>02</b><span>Get a statistically tested trend</span></div>
+        <div><b>03</b><span>Export a fact sheet + citation</span></div>
+      </div>
+      <div class="intro-actions">
+        <button id="intro-go" class="btn accent big">Enter the globe <span aria-hidden="true">→</span></button>
+        <button id="intro-guide" class="btn big ghost-big">Guide me as a data detective</button>
+        <button id="intro-case" class="btn big ghost-big">See a worked investigation</button>
+        <span class="hint">or press <kbd>T</kbd> for a guided tour</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMMAND PALETTE ============ -->
+  <div id="palette" class="modal" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="palette-card">
+      <div class="palette-input">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search" type="text" placeholder="Search a city, country, “25.8, 55.9” — or type a command" autocomplete="off" aria-label="Search" />
+        <kbd>Esc</kbd>
+      </div>
+      <ul id="search-results"></ul>
+      <div class="palette-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>Enter</kbd> select</span><span>Try “Dubai”, “hotspots”, “rainfall”</span></div>
+    </div>
+  </div>
+
+  <!-- ============ MODALS ============ -->
+  <div id="about" class="modal" role="dialog" aria-modal="true" aria-labelledby="about-h">
+    <div class="modal-card glass">
+      <button class="icon close" data-close aria-label="Close">×</button>
+      <span class="eyebrow">About</span>
+      <h2 id="about-h">TerraTrace</h2>
+      <p><b>The problem:</b> NASA's Earth data is free, but most students can't use it: it needs coding, GIS software and statistics. So assignments end up citing blogs instead of evidence.</p>
+      <p><b>Our answer:</b> click a place → get a trend that has been <i>statistically tested</i> (Mann–Kendall + Sen's slope, the methods climate scientists use), explained in plain language, ready to cite.</p>
+      <h3>Data sources</h3>
+      <ul id="about-sources"></ul>
+      <h3>Keyboard</h3>
+      <p class="keys"><kbd>Ctrl K</kbd> search · <kbd>1</kbd>–<kbd>9</kbd> variable · <kbd>M</kbd> trend/timeline · <kbd>Space</kbd> play · <kbd>T</kbd> story mode · <kbd>H</kbd> hotspots · <kbd>A</kbd> ask · <kbd>Esc</kbd> close</p>
+      <p id="about-team" class="muted"></p>
+    </div>
+  </div>
+
+  <div id="datacheck" class="modal" role="dialog" aria-modal="true" aria-labelledby="dc-h">
+    <div class="modal-card glass">
+      <button class="icon close" data-close aria-label="Close">×</button>
+      <span class="eyebrow">Data journey</span>
+      <h2 id="dc-h">From NASA to this globe</h2>
+      <p class="muted" id="data-title"></p>
+      <div id="journey"></div>
+      <h3 class="dc-sub">The global picture</h3>
+      <div id="global-figs"><p class="muted small">Calculating…</p></div>
+      <h3 class="dc-sub">Validation against published research</h3>
+      <div id="validation"></div>
+      <p><button class="btn small" id="dc-case">Read the worked investigation: Central Chile</button></p>
+      <h3 class="dc-sub">Data check</h3>
+      <ul id="problems"></ul>
+      <p class="muted">Every file in <code>data/processed/</code> is checked against <code>docs/DATA_CONTRACT.md</code> when the page loads. Add <code>?mode=mock</code> or <code>?mode=real</code> to the URL to force a mode.</p>
+    </div>
+  </div>
+
+  <div id="case" class="modal" role="dialog" aria-modal="true" aria-labelledby="case-h">
+    <div class="modal-card glass case-card">
+      <button class="icon close" data-close aria-label="Close">×</button>
+      <span class="eyebrow" id="case-eyebrow">Worked investigation</span>
+      <h2 id="case-h">Investigation</h2>
+      <p class="muted">A complete investigation, from question to citation. Every number below is computed live from the NASA data on this site.</p>
+      <div id="case-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" role="status"></div>
+  <div id="print-sheet"></div>
+
+  <!-- Libraries are stored locally in /vendor so the site works offline -->
+  <script src="vendor/globe.gl.min.js"></script>
+  <script src="vendor/chart.umd.min.js"></script>
+  <script src="vendor/topojson-client.min.js"></script>
+  <script src="vendor/d3-array.min.js"></script>
+  <script src="vendor/d3-geo.min.js"></script>
+  <script src="vendor/gsap.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

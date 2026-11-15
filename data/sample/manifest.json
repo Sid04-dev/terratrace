@@ -1,0 +1,29 @@
+{
+  "contract_version": 1,
+  "title": "Example dataset (3 cells, for reading — not loaded by the app)",
+  "generated": "2026-11-14T10:00:00+00:00",
+  "is_demo": true,
+  "years": [
+    2017,
+    2024
+  ],
+  "variables": [
+    {
+      "id": "temperature",
+      "label": "Air temperature (2 m)",
+      "unit": "°C",
+      "aggregation": "annual mean",
+      "decimals": 2,
+      "file": "grid_temperature.json",
+      "source": {
+        "name": "NASA POWER",
+        "dataset": "T2M (MERRA-2)",
+        "publisher": "NASA Langley Research Center",
+        "url": "https://power.larc.nasa.gov/",
+        "version": "",
+        "doi": "",
+        "year": 2026
+      }
+    }
+  ]
+}

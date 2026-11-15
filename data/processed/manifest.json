@@ -1,0 +1,126 @@
+{
+  "contract_version": 1,
+  "title": "TerraTrace dataset",
+  "generated": "2026-11-14T14:43:20+00:00",
+  "is_demo": false,
+  "years": [
+    2001,
+    2024
+  ],
+  "variables": [
+    {
+      "id": "temperature",
+      "label": "Air temperature (2 m)",
+      "unit": "°C",
+      "aggregation": "annual mean",
+      "decimals": 2,
+      "source": {
+        "name": "NASA POWER",
+        "dataset": "T2M (MERRA-2)",
+        "publisher": "NASA Langley Research Center",
+        "url": "https://power.larc.nasa.gov/",
+        "version": "",
+        "doi": "",
+        "year": 2026
+      },
+      "file": "grid_temperature.json"
+    },
+    {
+      "id": "precipitation",
+      "label": "Rainfall",
+      "unit": "mm/yr",
+      "aggregation": "annual total",
+      "decimals": 0,
+      "source": {
+        "name": "NASA GPCP",
+        "dataset": "V3.3 monthly 0.5° (satellite-gauge)",
+        "publisher": "NASA GES DISC",
+        "url": "https://disc.gsfc.nasa.gov/datasets/GPCPMON_3.3/summary",
+        "version": "3.3",
+        "doi": "",
+        "year": 2026
+      },
+      "file": "grid_precipitation.json",
+      "description": "Rain and snow per year, from NASA GPCP (satellites combined with rain gauges)."
+    },
+    {
+      "id": "soil_moisture",
+      "label": "Soil moisture (root zone)",
+      "unit": "0–1",
+      "aggregation": "annual mean",
+      "decimals": 3,
+      "trend_display": "absolute",
+      "description": "How wet the top metre of soil is, from 0 (dry) to 1 (saturated).",
+      "source": {
+        "name": "NASA POWER",
+        "dataset": "GWETROOT root zone soil wetness (MERRA-2)",
+        "publisher": "NASA Langley Research Center",
+        "url": "https://power.larc.nasa.gov/",
+        "version": "",
+        "doi": "",
+        "year": 2026
+      },
+      "file": "grid_soil_moisture.json"
+    }
+  ],
+  "checks": [
+    {
+      "id": "temperature_check",
+      "of": "temperature",
+      "label": "Surface temperature anomaly (GISTEMP v4)",
+      "unit": "°C",
+      "aggregation": "annual mean anomaly",
+      "decimals": 2,
+      "file": "check_temperature_gistemp.json",
+      "source": {
+        "name": "NASA GISS",
+        "dataset": "GISTEMP v4 (1200 km smoothing)",
+        "publisher": "NASA Goddard Institute for Space Studies",
+        "url": "https://data.giss.nasa.gov/gistemp/",
+        "version": "v4",
+        "doi": "",
+        "year": 2026
+      }
+    },
+    {
+      "id": "precipitation_check",
+      "of": "precipitation",
+      "label": "Rainfall (MERRA-2)",
+      "unit": "mm/yr",
+      "aggregation": "annual total",
+      "decimals": 0,
+      "file": "check_precipitation_merra2.json",
+      "short": "NASA MERRA-2",
+      "basis": "a weather model guided by observations",
+      "source": {
+        "name": "NASA POWER",
+        "dataset": "PRECTOTCORR (MERRA-2)",
+        "publisher": "NASA Langley Research Center",
+        "url": "https://power.larc.nasa.gov/",
+        "version": "",
+        "doi": "",
+        "year": 2026
+      }
+    },
+    {
+      "id": "soil_moisture_check",
+      "of": "soil_moisture",
+      "label": "Root-zone soil moisture (GLDAS)",
+      "unit": "kg/m²",
+      "aggregation": "annual mean",
+      "decimals": 1,
+      "file": "check_soil_moisture_gldas.json",
+      "short": "NASA GLDAS",
+      "basis": "a separate land model driven by GPCP satellite-gauge rainfall and weather analyses",
+      "source": {
+        "name": "NASA GLDAS",
+        "dataset": "Noah land model V2.1, monthly 1° (RootMoist_inst)",
+        "publisher": "NASA GES DISC",
+        "url": "https://disc.gsfc.nasa.gov/datasets/GLDAS_NOAH10_M_2.1/summary",
+        "version": "2.1",
+        "doi": "10.5067/LWTYSMP3VM5Z",
+        "year": 2020
+      }
+    }
+  ]
+}
