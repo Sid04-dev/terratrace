@@ -6,6 +6,8 @@ NASA Space Apps Challenge 2026 · *Be an Earth System Trend Detective* · Team *
 
 **Live site: https://terratrace.pages.dev** (free, no login, works on a phone)
 
+**Team:** Sidharth Gopakumar, Arkha Biswas, Syed Mujeebuddin, Mohammed Fahad, Mehdi Azzedine Ouldbeziou
+
 ---
 
 ## What it does
